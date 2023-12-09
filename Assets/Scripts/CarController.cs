@@ -42,6 +42,8 @@ public class CarController : MonoBehaviour
     public float aiAccelerateSpeed = 1f, aiTurnSpeed = .8f, aiReachPointRange = 5f, aiPointVariance = 3f, aiMaxTurn = 15f;
     private float aiSpeedInput, aiSpeedMod;
 
+    private float timeOnDefaultLayer = 0f;  // Variable para rastrear el tiempo en el layer "Default"
+
     // Start is called before the first frame update
     void Start()
     {
@@ -70,7 +72,6 @@ public class CarController : MonoBehaviour
         {
             lapTime += Time.deltaTime;
 
-
             if (!isAI)
             {
                 var ts = System.TimeSpan.FromSeconds(lapTime);
@@ -96,12 +97,12 @@ public class CarController : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.R) && resetCounter <= 0)
                 {
                     ResetToTrack();
+                    StartCoroutine(resetRB());
                 }
             }
 
             else
             {
-
                 targetPoint.y = transform.position.y;
 
                 if (Vector3.Distance(transform.position, targetPoint) < aiReachPointRange)
@@ -129,18 +130,48 @@ public class CarController : MonoBehaviour
                     aiSpeedInput = Mathf.MoveTowards(aiSpeedInput, aiTurnSpeed, aiAccelerateSpeed);
                 }
 
-
                 speedInput = aiSpeedInput * forwardAccel * aiSpeedMod;
 
+                // Verificar si el objeto está sobre el layer "Default"
+                if (IsOnDefaultLayer())
+                {
+                    timeOnDefaultLayer += Time.deltaTime;
+
+                    // Si ha estado más de 3 segundos sobre el layer "Default", llamar a ResetToTrack()
+                    if (timeOnDefaultLayer > 3f)
+                    {
+                        ResetToTrack();
+                        StartCoroutine(resetRB());
+                    }
+                }
+                else
+                {
+                    // Si no está sobre el layer "Default", reiniciar el temporizador
+                    timeOnDefaultLayer = 0f;
+                }
             }
 
             leftFrontWheel.localRotation = Quaternion.Euler(leftFrontWheel.localRotation.eulerAngles.x, (turnInput * maxWheelTurn) - 180, leftFrontWheel.localRotation.eulerAngles.z);
             rightFrontWheel.localRotation = Quaternion.Euler(rightFrontWheel.localRotation.eulerAngles.x, (turnInput * maxWheelTurn), rightFrontWheel.localRotation.eulerAngles.z);
 
         }
-
     }
 
+    // Método para verificar si el objeto está sobre el layer "Default"
+    private bool IsOnDefaultLayer()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(groundRayPoint.position, -transform.up, out hit, groundRayLength))
+        {
+            // Verificar si el objeto está sobre el layer "Default"
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Default"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private void FixedUpdate()
     {
@@ -162,7 +193,6 @@ public class CarController : MonoBehaviour
 
             normalTarget = (normalTarget + hit.normal) / 2f;
         }
-
 
         if (grounded)
         {
@@ -187,15 +217,12 @@ public class CarController : MonoBehaviour
             theRB.velocity = theRB.velocity.normalized * maxSpeed;
         }
 
-        //Debug.Log(theRB.velocity.magnitude);
-
         transform.position = theRB.position;
 
         if (grounded && speedInput != 0)
         {
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + new Vector3(0f, turnInput * turnStrength * Time.deltaTime * Mathf.Sign(speedInput) * (theRB.velocity.magnitude / maxSpeed), 0f));
         }
-
     }
 
     public void CheckpointHit(int cpNumber)
@@ -232,7 +259,6 @@ public class CarController : MonoBehaviour
         RandomiseAITarget();
     }
 
-
     public void LapCompleted()
     {
         currentLap++;
@@ -244,7 +270,6 @@ public class CarController : MonoBehaviour
 
         if (currentLap <= RaceManager.instance.totalLaps)
         {
-
             lapTime = 0f;
 
             if (!isAI)
@@ -278,7 +303,6 @@ public class CarController : MonoBehaviour
         targetPoint += new Vector3(Random.Range(-aiPointVariance, aiPointVariance), 0f, Random.Range(-aiPointVariance, aiPointVariance));
     }
 
-
     void ResetToTrack()
     {
         int pointToGoTo = nextCheckpoint - 1;
@@ -287,8 +311,12 @@ public class CarController : MonoBehaviour
             pointToGoTo = RaceManager.instance.allCheckpoints.Length - 1;
         }
 
-        transform.position = RaceManager.instance.allCheckpoints[pointToGoTo].transform.position;
-        theRB.transform.position = transform.position;
+    
+        Vector3 checkpointPosition = RaceManager.instance.allCheckpoints[pointToGoTo].transform.position;
+        checkpointPosition.y += 5f;  // Incrementar la posición en Y en 5 unidades
+
+        transform.position = checkpointPosition;
+        theRB.transform.position = checkpointPosition;
         theRB.velocity = Vector3.zero;
 
         speedInput = 0f;
@@ -297,4 +325,12 @@ public class CarController : MonoBehaviour
         resetCounter = resetCooldown;
     }
 
+    IEnumerator resetRB()
+    {
+        yield return new WaitForSeconds(1.5f);
+        theRB.isKinematic = true;
+        yield return new WaitForSeconds(0.5f);
+        theRB.isKinematic = false;
+        yield return null;
+    }
 }
