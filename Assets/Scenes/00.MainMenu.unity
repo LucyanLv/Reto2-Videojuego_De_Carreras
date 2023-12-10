@@ -3659,8 +3659,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -141.67538, y: -36.21077}
-  m_SizeDelta: {x: 205.8412, y: 131.1024}
+  m_AnchoredPosition: {x: -152.06348, y: -36.21077}
+  m_SizeDelta: {x: 243.4764, y: 131.1024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3718019323974357377
 MonoBehaviour:
@@ -4012,7 +4012,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Inserte cr\xE9ditos"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6657,7 +6657,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 350908086, guid: dcc35163b55b4764faff9a753bacc877, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cb2fa7615c5d4d44c9c9ce42b42c8463, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
