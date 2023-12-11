@@ -51,6 +51,8 @@ public class CarController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var lapsForLevel = RaceManager.instance.totalLaps + 1;
+
         theRB.transform.parent = null;
 
         dragOnGround = theRB.drag;
@@ -64,7 +66,7 @@ public class CarController : MonoBehaviour
 
         }
 
-        UIManager.instance.lapCounterText.text = currentLap + "/" + RaceManager.instance.totalLaps;
+        UIManager.instance.lapCounterText.text = currentLap + "/" + lapsForLevel;
 
         resetCounter = resetCooldown;
     }
