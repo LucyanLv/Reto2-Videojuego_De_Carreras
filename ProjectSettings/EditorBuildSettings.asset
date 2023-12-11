@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/04.Desierto tatacoa.unity
     guid: 56866cddc00356442b9d48a7c25cbb6b
+  - enabled: 1
+    path: Assets/Scenes/WIN.unity
+    guid: d53b3fc552aa4b44392819794b3d3524
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: a960ef1894f28ae4287720cf289540a9, type: 2}
