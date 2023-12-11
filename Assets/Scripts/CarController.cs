@@ -45,6 +45,8 @@ public class CarController : MonoBehaviour
 
     float airborneTimer = 0f;
     bool inAir = false;
+    public Transform view;
+    public AudioSource engineSound;
 
     // Start is called before the first frame update
     void Start()
@@ -141,6 +143,10 @@ public class CarController : MonoBehaviour
             leftFrontWheel.localRotation = Quaternion.Euler(leftFrontWheel.localRotation.eulerAngles.x, (turnInput * maxWheelTurn) - 180, leftFrontWheel.localRotation.eulerAngles.z);
             rightFrontWheel.localRotation = Quaternion.Euler(rightFrontWheel.localRotation.eulerAngles.x, (turnInput * maxWheelTurn), rightFrontWheel.localRotation.eulerAngles.z);
 
+            if (engineSound != null)
+            {
+                engineSound.pitch = 1f + ((theRB.velocity.magnitude / maxSpeed) * 2f);
+            }
         }
 
     }
@@ -311,6 +317,13 @@ public class CarController : MonoBehaviour
         transform.position = RaceManager.instance.allCheckpoints[pointToGoTo].transform.position;
         theRB.transform.position = transform.position;
         theRB.velocity = Vector3.zero;
+
+        // Nueva parte para ajustar la rotación del objeto "View"
+        if (view != null)
+        {
+            Vector3 checkpointDirection = RaceManager.instance.allCheckpoints[nextCheckpoint].transform.position - transform.position;
+            view.forward = checkpointDirection.normalized;
+        }
 
         speedInput = 0f;
         turnInput = 0f;
